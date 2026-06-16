@@ -1,5 +1,5 @@
 import requests
-from urllib.parse import unquote, quote
+from urllib.parse import unquote
 import time
 import threading
 from flask import Flask, jsonify
