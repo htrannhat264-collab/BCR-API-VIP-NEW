@@ -1,5 +1,5 @@
 import requests
-from urllib.parse import unquote
+from urllib.parse import unquote, quote
 import time
 import threading
 from flask import Flask, jsonify
@@ -48,7 +48,6 @@ data_cache = []
 last_results = {}
 last_data = []
 running = True
-prediction_sessions = {}
 
 # ======================
 # LỚP THUẬT TOÁN DỰ ĐOÁN
