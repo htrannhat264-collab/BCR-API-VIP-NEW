@@ -43,7 +43,7 @@ session.headers.update({
 # ======================
 # BIẾN TOÀN CỤC
 # ======================
-history_data = {}  # Lưu lịch sử kết quả
+history_data = {}
 data_cache = []
 last_results = {}
 last_data = []
@@ -143,7 +143,6 @@ class BaccaratPredictor:
             return None, 0
         score = {'B': 0, 'P': 0}
         
-        # 1. Xu hướng gần đây
         last_10 = history[-10:] if len(history) >= 10 else history
         b_count = sum(1 for x in last_10 if x == 'B')
         p_count = len(last_10) - b_count
@@ -152,14 +151,12 @@ class BaccaratPredictor:
         else:
             score['P'] += (p_count / len(last_10)) * 30
         
-        # 2. Đảo chiều
         if len(history) >= 2:
             if history[-1] == history[-2]:
                 score['P' if history[-1] == 'B' else 'B'] += 20
             else:
                 score[history[-1]] += 20
         
-        # 3. Tổng thể
         total_b = sum(1 for x in history if x == 'B')
         total_p = len(history) - total_b
         if total_b > total_p:
@@ -167,7 +164,6 @@ class BaccaratPredictor:
         else:
             score['P'] += (total_p / len(history)) * 25
         
-        # 4. Streak
         streak = self._get_streak(history)
         if len(streak) >= 3:
             score['P' if streak[0] == 'B' else 'B'] += 25
@@ -362,7 +358,6 @@ def fetch_loop():
                                     "goodRoad": t.get("goodRoad", ""),
                                     "time": time.strftime("%H:%M:%S")
                                 })
-                                # Cập nhật lịch sử cho thuật toán
                                 predictor.update_history(tb_name, curr)
                         
                         if new_data:
@@ -417,7 +412,6 @@ def get_prediction_details(table_name):
         strategy = 'QUAN SÁT - Không nên đặt cược'
         bet_amount = '0 (Chờ cơ hội khác)'
     
-    # Đếm số thuật toán đồng thuận
     consensus_count = sum(1 for d in algorithm_details.values() if d['du_doan'] == final_pred)
     
     return {
@@ -433,7 +427,7 @@ def get_prediction_details(table_name):
     }
 
 # ======================
-# FLASK API
+# FLASK APP
 # ======================
 app = Flask(__name__)
 
@@ -458,7 +452,6 @@ def get_data():
 
 @app.route("/predict/all")
 def predict_all():
-    """Dự đoán tất cả bàn"""
     results = []
     for table_name in history_data.keys():
         pred = get_prediction_details(table_name)
@@ -479,7 +472,6 @@ def predict_all():
 
 @app.route("/predict/<string:table_name>")
 def predict_one(table_name):
-    """Dự đoán một bàn"""
     if table_name not in history_data:
         return jsonify({'loi': f'Không tìm thấy bàn "{table_name}"'}), 404
     
@@ -495,7 +487,6 @@ def predict_one(table_name):
 
 @app.route("/predict/best")
 def predict_best():
-    """Bàn có tỷ lệ thắng cao nhất"""
     results = []
     for table_name in history_data.keys():
         pred = get_prediction_details(table_name)
