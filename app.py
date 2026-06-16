@@ -12,6 +12,13 @@ import math
 from statistics import mean, stdev
 
 # ======================
+# VÁ LỖI MARKUPSAFE (RENDER)
+# ======================
+import markupsafe
+if not hasattr(markupsafe, 'soft_unicode'):
+    markupsafe.soft_unicode = markupsafe.soft_str
+
+# ======================
 # CẤU HÌNH
 # ======================
 BASE = "https://aibcr.me"
@@ -481,7 +488,7 @@ def predict_one(table_name):
         'ban': table_name,
         'du_doan_chi_tiet': pred,
         'lich_su_gan_day': history[-10:] if history else [],
-        'thoi_gian': time.strftime("%Y-%m-%d %H:%M:%S")
+        'thoi_gian': time.strftime("%H:%M:%S")
     })
 
 @app.route("/predict/best")
